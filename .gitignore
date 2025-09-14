@@ -4,3 +4,4 @@ dist/
 coverage/
 .env
 .github/
+.DS_Store
