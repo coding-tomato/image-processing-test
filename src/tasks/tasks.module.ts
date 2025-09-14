@@ -1,15 +1,18 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { TaskSchema } from '../infrastructure/persistence/mongo/schemas/task.schema';
+import { ImageSchema } from '../infrastructure/persistence/mongo/schemas/image.schema';
 import { TasksController } from '../infrastructure/http/tasks.controller';
 import { CreateTaskUseCase } from '../application/tasks/use-cases/create-task.usecase';
 import { ProcessTaskUseCase } from '../application/tasks/use-cases/process-task.usecase';
+import { GetTaskUseCase } from '../application/tasks/use-cases/get-task.usecase';
 import { TaskService } from '../domain/tasks/task.service';
 import { TaskRepositoryMongo } from '../infrastructure/persistence/mongo/task.repository.mongo';
-import { GetTaskUseCase } from 'src/application/tasks/use-cases/get-task.usecase';
+import { ImageRepositoryMongo } from '../infrastructure/persistence/mongo/image.repository.mongo';
 
-// Token for TaskRepository injection
+// Tokens for repository injection
 export const TASK_REPOSITORY = 'TASK_REPOSITORY';
+export const IMAGE_REPOSITORY = 'IMAGE_REPOSITORY';
 
 /**
  * Tasks Module
@@ -19,9 +22,10 @@ export const TASK_REPOSITORY = 'TASK_REPOSITORY';
  */
 @Module({
   imports: [
-    // Schema
+    // Schemas
     MongooseModule.forFeature([
-      { name: 'Task', schema: TaskSchema }
+      { name: 'Task', schema: TaskSchema },
+      { name: 'ImageDocument', schema: ImageSchema }
     ])
   ],
   controllers: [TasksController],
@@ -34,14 +38,18 @@ export const TASK_REPOSITORY = 'TASK_REPOSITORY';
       provide: TASK_REPOSITORY,
       useClass: TaskRepositoryMongo,
     },
+    {
+      provide: IMAGE_REPOSITORY,
+      useClass: ImageRepositoryMongo,
+    },
     
     // Use cases
     {
       provide: GetTaskUseCase,
-      useFactory: (taskRepository, taskService) => {
-        return new GetTaskUseCase(taskRepository, taskService);
+      useFactory: (taskRepository, imageRepository) => {
+        return new GetTaskUseCase(taskRepository, imageRepository);
       },
-      inject: [TASK_REPOSITORY, TaskService],
+      inject: [TASK_REPOSITORY, IMAGE_REPOSITORY],
     },
     {
       provide: CreateTaskUseCase,
@@ -60,7 +68,9 @@ export const TASK_REPOSITORY = 'TASK_REPOSITORY';
   ],
   exports: [
     TASK_REPOSITORY,
+    IMAGE_REPOSITORY,
     CreateTaskUseCase,
+    GetTaskUseCase,
     ProcessTaskUseCase,
   ],
 })
