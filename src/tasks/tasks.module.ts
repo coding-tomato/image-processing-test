@@ -10,10 +10,8 @@ import { TaskService } from '../domain/tasks/task.service';
 import { TaskRepositoryMongo } from '../infrastructure/persistence/mongo/task.repository.mongo';
 import { ImageRepositoryMongo } from '../infrastructure/persistence/mongo/image.repository.mongo';
 import { DownloadAdapter } from '../infrastructure/files/download.adapter';
-
-// Tokens for repository injection
-export const TASK_REPOSITORY = 'TASK_REPOSITORY';
-export const IMAGE_REPOSITORY = 'IMAGE_REPOSITORY';
+import { SharpAdapter } from 'src/infrastructure/image-processing/sharp.adapter';
+import { Tokens } from '../common/constants/tokens.constant';
 
 /**
  * Tasks Module
@@ -36,14 +34,21 @@ export const IMAGE_REPOSITORY = 'IMAGE_REPOSITORY';
     
     // Infrastructure
     {
-      provide: TASK_REPOSITORY,
+      provide: Tokens.Repository.Tasks,
       useClass: TaskRepositoryMongo,
     },
     {
-      provide: IMAGE_REPOSITORY,
+      provide: Tokens.Repository.Images,
       useClass: ImageRepositoryMongo,
     },
-    DownloadAdapter,
+    {
+      provide: Tokens.Adapter.Download,
+      useClass: DownloadAdapter,
+    },
+    {
+      provide: Tokens.Adapter.Sharp,
+      useClass: SharpAdapter,
+    },
     
     // Use cases
     {
@@ -51,26 +56,28 @@ export const IMAGE_REPOSITORY = 'IMAGE_REPOSITORY';
       useFactory: (taskRepository, imageRepository) => {
         return new GetTaskUseCase(taskRepository, imageRepository);
       },
-      inject: [TASK_REPOSITORY, IMAGE_REPOSITORY],
+      inject: [Tokens.Repository.Tasks, Tokens.Repository.Images],
     },
     {
       provide: CreateTaskUseCase,
       useFactory: (taskRepository, taskService, downloadAdapter) => {
         return new CreateTaskUseCase(taskRepository, taskService, downloadAdapter);
       },
-      inject: [TASK_REPOSITORY, TaskService, DownloadAdapter],
+      inject: [Tokens.Repository.Tasks, TaskService, Tokens.Adapter.Download],
     },
     {
       provide: ProcessTaskUseCase,
       useFactory: (taskRepository, taskService) => {
         return new ProcessTaskUseCase(taskRepository, taskService);
       },
-      inject: [TASK_REPOSITORY, TaskService],
+      inject: [Tokens.Repository.Tasks, TaskService],
     },
   ],
   exports: [
-    TASK_REPOSITORY,
-    IMAGE_REPOSITORY,
+    Tokens.Repository.Tasks,
+    Tokens.Repository.Images,
+    Tokens.Adapter.Sharp,
+    Tokens.Adapter.Download,
     CreateTaskUseCase,
     GetTaskUseCase,
     ProcessTaskUseCase,
