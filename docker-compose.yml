@@ -1,0 +1,27 @@
+services:
+  api:
+    image: node:18
+    working_dir: /app
+    ports:
+      - "3000:3000"
+      - "9229:9229" # For debugging
+    volumes:
+      - .:/app
+    command: bash -c "npm install --legacy-peer-deps && npm run start:dev"
+    depends_on:
+      - mongo
+    environment:
+      - NODE_ENV=development
+      - NPM_CONFIG_REGISTRY=https://registry.npmjs.org/
+    env_file:
+      - .env
+      
+  mongo:
+    image: mongo:6
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+volumes:
+  mongo_data:

@@ -1,0 +1,40 @@
+FROM node:18 AS builder
+
+# Set working directory
+WORKDIR /app
+
+# Copy package files
+COPY package.json package-lock.json ./
+
+# Install dependencies with npm ci for more reliable builds (with legacy peer deps flag)
+RUN npm ci --legacy-peer-deps
+
+# Copy application source
+COPY . .
+
+# Build the application
+RUN npm run build
+
+# Production stage
+FROM node:18-slim
+
+# Set working directory
+WORKDIR /app
+
+# Copy package files
+COPY package.json package-lock.json ./
+
+# Install only production dependencies
+RUN npm ci --only=production --legacy-peer-deps
+
+# Copy built application from the builder stage
+COPY --from=builder /app/dist ./dist
+
+# Set environment variables
+ENV NODE_ENV=production
+
+# Expose the application port
+EXPOSE 3000
+
+# Start the application
+CMD ["node", "dist/main"]
