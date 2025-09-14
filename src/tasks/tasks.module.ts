@@ -9,6 +9,7 @@ import { GetTaskUseCase } from '../application/tasks/use-cases/get-task.usecase'
 import { TaskService } from '../domain/tasks/task.service';
 import { TaskRepositoryMongo } from '../infrastructure/persistence/mongo/task.repository.mongo';
 import { ImageRepositoryMongo } from '../infrastructure/persistence/mongo/image.repository.mongo';
+import { DownloadAdapter } from '../infrastructure/files/download.adapter';
 
 // Tokens for repository injection
 export const TASK_REPOSITORY = 'TASK_REPOSITORY';
@@ -42,6 +43,7 @@ export const IMAGE_REPOSITORY = 'IMAGE_REPOSITORY';
       provide: IMAGE_REPOSITORY,
       useClass: ImageRepositoryMongo,
     },
+    DownloadAdapter,
     
     // Use cases
     {
@@ -53,10 +55,10 @@ export const IMAGE_REPOSITORY = 'IMAGE_REPOSITORY';
     },
     {
       provide: CreateTaskUseCase,
-      useFactory: (taskRepository, taskService) => {
-        return new CreateTaskUseCase(taskRepository, taskService);
+      useFactory: (taskRepository, taskService, downloadAdapter) => {
+        return new CreateTaskUseCase(taskRepository, taskService, downloadAdapter);
       },
-      inject: [TASK_REPOSITORY, TaskService],
+      inject: [TASK_REPOSITORY, TaskService, DownloadAdapter],
     },
     {
       provide: ProcessTaskUseCase,

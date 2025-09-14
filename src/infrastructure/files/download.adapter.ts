@@ -8,11 +8,17 @@ import { URL } from 'url';
 @Injectable()
 export class DownloadAdapter {
   private readonly inputDir = join(process.cwd(), 'input');
+  private readonly outputDir = join(process.cwd(), 'output');
 
   constructor() {
     // Ensure input directory exists
     if (!existsSync(this.inputDir)) {
       mkdirSync(this.inputDir, { recursive: true });
+    }
+    
+    // Ensure output directory exists
+    if (!existsSync(this.outputDir)) {
+      mkdirSync(this.outputDir, { recursive: true });
     }
   }
 
@@ -23,7 +29,6 @@ export class DownloadAdapter {
    */
   async getFilePath(path: string): Promise<string> {
     try {
-      // Check if path is a URL
       const url = new URL(path);
       
       if (url.protocol === 'http:' || url.protocol === 'https:') {
@@ -50,9 +55,28 @@ export class DownloadAdapter {
       const fileStream = createWriteStream(outputPath);
 
       const protocol = url.protocol === 'https:' ? https : http;
+      
+      // Add request options with User-Agent header to prevent 403 errors
+      const options = {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36',
+          'Accept': 'image/webp,image/apng,image/*,*/*;q=0.8',
+          'Referer': url.origin
+        }
+      };
 
-      protocol.get(url.toString(), (response) => {
+      protocol.get(url.toString(), options, (response) => {
+        // Handle redirects (status codes 301, 302, 307, 308)
+        if (response.statusCode === 301 || response.statusCode === 302 || 
+            response.statusCode === 307 || response.statusCode === 308) {
+          const redirectUrl = new URL(response.headers.location, url);
+          fileStream.close();
+          this.downloadFile(redirectUrl).then(resolve).catch(reject);
+          return;
+        }
+        
         if (response.statusCode !== 200) {
+          fileStream.close();
           reject(new Error(`Failed to download file: ${response.statusCode} ${response.statusMessage}`));
           return;
         }
@@ -63,7 +87,13 @@ export class DownloadAdapter {
           fileStream.close();
           resolve(outputPath);
         });
+        
+        fileStream.on('error', (err) => {
+          fileStream.close();
+          reject(new Error(`File write error: ${err.message}`));
+        });
       }).on('error', (err) => {
+        fileStream.close();
         reject(new Error(`Download error: ${err.message}`));
       });
     });

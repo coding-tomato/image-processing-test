@@ -4,9 +4,11 @@ services:
     working_dir: /app
     ports:
       - "3000:3000"
-      - "9229:9229" # For debugging
+      - "9229:9229"
     volumes:
       - .:/app
+      - ./input:/app/input
+      - ./output:/app/output
     command: bash -c "npm install --legacy-peer-deps && npm run start:dev"
     depends_on:
       - mongo

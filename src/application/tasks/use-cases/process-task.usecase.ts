@@ -34,12 +34,12 @@ export class ProcessTaskUseCase {
     }
 
     try {
-      // Implement actual image processing logic here
-      // 1. Download or access the original image (via FS/HTTP adapter)
-      // 2. Process image variants with SharpAdapter
-      // 3. Save results in ImageRepository
+      // Image processing logic
+      // 1. The image has already been downloaded or resolved by CreateTaskUseCase
+      // 2. Process image variants with SharpAdapter (not implemented yet)
+      // 3. Save results in ImageRepository (not implemented yet)
       
-      // Temporary, mark as completed, image generaration is left to do
+      // The originalPath now contains the absolute path processed by DownloadAdapter
       console.log(`[ProcessTaskUseCase] Processing task ${taskId} with image at ${task.originalPath}`);
       const updatedTask = this.taskService.markCompleted(task);
       

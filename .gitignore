@@ -5,3 +5,6 @@ coverage/
 .env
 .github/
 .DS_Store
+
+input/
+output/
