@@ -7,7 +7,7 @@ import { TaskResponseDto } from '../dto/task-response.dto';
 /**
  * Create Task Use Case
  * 
- * This use case handles the creation of a new task with a pending status,
+ * Handles the creation of a new task with a pending status,
  * assigns it a random price using the domain service, and persists it
  * via the TaskRepository port.
  */
@@ -26,8 +26,6 @@ export class CreateTaskUseCase {
     // Generate a random price using domain service
     const price = this.taskService.assignPrice();
 
-    // Create a new Task with pending status
-    // Note: ID generation is now handled by MongoDB in the repository layer
     const task = new Task({
       status: 'pending',
       price,
@@ -35,7 +33,6 @@ export class CreateTaskUseCase {
     });
 
     // Persist the task using the repository
-    // The repository implementation will ensure MongoDB generates an ID
     const savedTask = await this.taskRepository.save(task);
 
     // Return the task details
@@ -45,6 +42,4 @@ export class CreateTaskUseCase {
       price: savedTask.price,
     };
   }
-
-  // ID generation method removed as we're now letting MongoDB handle this
 }
