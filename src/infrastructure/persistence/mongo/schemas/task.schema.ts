@@ -2,6 +2,17 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
 /**
+ * Image information schema
+ */
+class TaskImage {
+  @Prop({ required: true })
+  resolution: string;
+
+  @Prop({ required: true })
+  path: string;
+}
+
+/**
  * Task Schema for MongoDB
  * 
  * This schema defines how Task entities are stored in MongoDB.
@@ -20,6 +31,9 @@ export class TaskDocument extends Document {
 
   @Prop({ required: true })
   originalPath: string;
+
+  @Prop({ type: [Object], default: [] })
+  images: TaskImage[];
 
   @Prop({ default: Date.now })
   createdAt: Date;

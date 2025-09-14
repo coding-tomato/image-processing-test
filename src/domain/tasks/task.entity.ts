@@ -1,4 +1,12 @@
 /**
+ * Interface for image information in a task
+ */
+export interface TaskImage {
+  resolution: string;
+  path: string;
+}
+
+/**
  * Task Entity
  */
 export class Task {
@@ -6,6 +14,7 @@ export class Task {
   status: 'pending' | 'completed' | 'failed';
   price: number;
   originalPath: string;
+  images: TaskImage[];
   createdAt: Date;
   updatedAt: Date;
 
@@ -13,5 +22,6 @@ export class Task {
     Object.assign(this, partial);
     this.createdAt = this.createdAt || new Date();
     this.updatedAt = this.updatedAt || new Date();
+    this.images = this.images || [];
   }
 }

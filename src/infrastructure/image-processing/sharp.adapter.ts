@@ -39,13 +39,10 @@ export class SharpAdapter {
       await fs.mkdir(outputBaseDir, { recursive: true });
       
       for (const resolution of RESOLUTIONS) {
-        // Create directory for this resolution if it doesn't exist
-        const resolutionDir = path.join(outputBaseDir, resolution);
-        await fs.mkdir(resolutionDir, { recursive: true });
-        
         const md5Hash = generateMd5(`${fileName}_${resolution}_${Date.now()}`);
         
-        const outputPath = path.join(resolutionDir, `${md5Hash}${fileExt}`);
+        const outputPath = path.join(outputBaseDir, `${fileName}_${md5Hash}_${resolution}${fileExt}`);
+        const urlPath = `/images/${fileName}_${md5Hash}_${resolution}${fileExt}`;
         
         await image
           .clone()
@@ -58,11 +55,11 @@ export class SharpAdapter {
         
         variants.push({
           resolution,
-          path: outputPath,
+          path: urlPath,
           md5: md5Hash,
         });
       }
-      
+
       return variants;
     } catch (error) {
       console.error('Error generating image variants:', error);

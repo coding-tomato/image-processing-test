@@ -6,5 +6,5 @@ coverage/
 .github/
 .DS_Store
 
-input/
-output/
+input/*
+output/*

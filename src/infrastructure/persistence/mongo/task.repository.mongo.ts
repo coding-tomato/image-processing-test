@@ -28,6 +28,7 @@ export class TaskRepositoryMongo implements TaskRepository {
       status: document.status,
       price: document.price,
       originalPath: document.originalPath,
+      images: document.images || [],
       createdAt: document.createdAt,
       updatedAt: document.updatedAt,
     });
@@ -42,6 +43,7 @@ export class TaskRepositoryMongo implements TaskRepository {
       status: task.status,
       price: task.price,
       originalPath: task.originalPath,
+      images: task.images || [],
       createdAt: task.createdAt,
       updatedAt: new Date(),
     };

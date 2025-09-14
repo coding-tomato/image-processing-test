@@ -7,12 +7,17 @@ import { TaskRepositoryMongo } from '../../../infrastructure/persistence/mongo/t
 import { TaskService } from '../../../domain/tasks/task.service';
 import { Task } from '../../../domain/tasks/task.entity';
 import { Model } from 'mongoose';
+import { ImageRepository } from '../../../domain/images/image.repository.port';
+import { SharpAdapter } from '../../../infrastructure/image-processing/sharp.adapter';
+import { Image } from '../../../domain/images/image.entity';
 
 describe('ProcessTaskUseCase', () => {
   let mongoServer: MongoMemoryServer;
   let taskModel: Model<any>;
   let taskRepository: TaskRepositoryMongo;
   let taskService: TaskService;
+  let imageRepository: ImageRepository;
+  let sharpAdapter: SharpAdapter;
   let processTaskUseCase: ProcessTaskUseCase;
   
   // Test data
@@ -31,6 +36,10 @@ describe('ProcessTaskUseCase', () => {
     status: 'completed',
     price: 30,
     originalPath: '/path/to/another-image.jpg',
+    images: [
+      { resolution: '1024', path: '/path/to/output/image_1024.jpg' },
+      { resolution: '800', path: '/path/to/output/image_800.jpg' }
+    ],
     createdAt: new Date(),
     updatedAt: new Date()
   });
@@ -43,6 +52,19 @@ describe('ProcessTaskUseCase', () => {
     createdAt: new Date(),
     updatedAt: new Date()
   });
+  
+  const mockImageVariants = [
+    {
+      resolution: '1024',
+      path: '/output/image/1024/hash1.jpg',
+      md5: 'hash1'
+    },
+    {
+      resolution: '800',
+      path: '/output/image/800/hash2.jpg',
+      md5: 'hash2'
+    }
+  ];
 
   beforeAll(async () => {
     mongoServer = await MongoMemoryServer.create();
@@ -52,10 +74,24 @@ describe('ProcessTaskUseCase', () => {
     // Create the model for our repository
     taskModel = mongoose.model('Task', TaskSchema);
     
+    // Setup mock dependencies
+    imageRepository = {
+      save: jest.fn().mockImplementation((image: Image) => Promise.resolve(image)),
+      findByTaskId: jest.fn().mockImplementation((taskId: string) => Promise.resolve([]))
+    };
+    
+    sharpAdapter = {
+      generateVariants: jest.fn().mockImplementation(() => Promise.resolve(mockImageVariants))
+    };
+    
     // Setup our dependencies
     taskRepository = new TaskRepositoryMongo(taskModel);
+    
+    // Override the save method to properly return the images
+    jest.spyOn(taskRepository, 'save').mockImplementation((task: Task) => Promise.resolve(task));
+    
     taskService = new TaskService();
-    processTaskUseCase = new ProcessTaskUseCase(taskRepository, taskService);
+    processTaskUseCase = new ProcessTaskUseCase(taskRepository, taskService, imageRepository, sharpAdapter);
   });
 
   afterAll(async () => {
@@ -113,6 +149,8 @@ describe('ProcessTaskUseCase', () => {
   it('should process a pending task and mark it as completed', async () => {
     await taskModel.create(mockTask);
     const markCompletedSpy = jest.spyOn(taskService, 'markCompleted');
+    const generateVariantsSpy = jest.spyOn(sharpAdapter, 'generateVariants');
+    const saveImageSpy = jest.spyOn(imageRepository, 'save');
     
     const result = await processTaskUseCase.execute(mockTaskId);
     
@@ -120,6 +158,12 @@ describe('ProcessTaskUseCase', () => {
     expect(result.id).toBe(mockTaskId);
     expect(result.status).toBe('completed');
     expect(markCompletedSpy).toHaveBeenCalledTimes(1);
+    expect(generateVariantsSpy).toHaveBeenCalledWith(mockTask.originalPath);
+    expect(saveImageSpy).toHaveBeenCalledTimes(mockImageVariants.length);
+    expect(result.images).toBeDefined();
+    expect(result.images.length).toBe(mockImageVariants.length);
+    expect(result.images[0].resolution).toBe(mockImageVariants[0].resolution);
+    expect(result.images[0].path).toBe(mockImageVariants[0].path);
     expect(console.log).toHaveBeenCalledWith(
       expect.stringContaining(`Processing task ${mockTaskId} with image at ${mockTask.originalPath}`)
     );
@@ -128,7 +172,7 @@ describe('ProcessTaskUseCase', () => {
   it('should mark a task as failed when an error occurs during processing', async () => {
     await taskModel.create(mockTask);
     const mockError = new Error('Processing error');
-    jest.spyOn(taskService, 'markCompleted').mockImplementation(() => {
+    jest.spyOn(sharpAdapter, 'generateVariants').mockImplementation(() => {
       throw mockError;
     });
     const markFailedSpy = jest.spyOn(taskService, 'markFailed');

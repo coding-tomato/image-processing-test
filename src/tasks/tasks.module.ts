@@ -67,10 +67,10 @@ import { Tokens } from '../common/constants/tokens.constant';
     },
     {
       provide: ProcessTaskUseCase,
-      useFactory: (taskRepository, taskService) => {
-        return new ProcessTaskUseCase(taskRepository, taskService);
+      useFactory: (taskRepository, taskService, imageRepository, sharpAdapter) => {
+        return new ProcessTaskUseCase(taskRepository, taskService, imageRepository, sharpAdapter);
       },
-      inject: [Tokens.Repository.Tasks, TaskService],
+      inject: [Tokens.Repository.Tasks, TaskService, Tokens.Repository.Images, Tokens.Adapter.Sharp],
     },
   ],
   exports: [

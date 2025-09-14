@@ -1,7 +1,9 @@
 import { NotFoundException } from '@nestjs/common';
+import { ImageRepository } from '../../../domain/images/image.repository.port';
 import { Task } from '../../../domain/tasks/task.entity';
 import { TaskRepository } from '../../../domain/tasks/task.repository.port';
 import { TaskService } from '../../../domain/tasks/task.service';
+import { SharpAdapter } from '../../../infrastructure/image-processing/sharp.adapter';
 
 /**
  * Process Task Use Case
@@ -15,6 +17,8 @@ export class ProcessTaskUseCase {
   constructor(
     private readonly taskRepository: TaskRepository,
     private readonly taskService: TaskService,
+    private readonly imageRepository: ImageRepository,
+    private readonly sharpAdapter: SharpAdapter,
   ) {}
 
   /**
@@ -36,15 +40,31 @@ export class ProcessTaskUseCase {
     try {
       // Image processing logic
       // 1. The image has already been downloaded or resolved by CreateTaskUseCase
-      // 2. Process image variants with SharpAdapter (not implemented yet)
-      // 3. Save results in ImageRepository (not implemented yet)
+      // 2. Process image variants with SharpAdapter
+      // 3. Save results in ImageRepository
       
       // The originalPath now contains the absolute path processed by DownloadAdapter
       console.log(`[ProcessTaskUseCase] Processing task ${taskId} with image at ${task.originalPath}`);
-      const updatedTask = this.taskService.markCompleted(task);
       
+      // Generate image variants using SharpAdapter
+      const imageVariants = await this.sharpAdapter.generateVariants(
+        task.originalPath,
+      );
+
+      // Update the task with processed image information
+      const updatedTask = new Task({
+        ...task,
+        images: imageVariants.map((variant) => ({
+          resolution: variant.resolution,
+          path: variant.path,
+        })),
+      });
+
+      // Mark the task as completed
+      const completedTask = this.taskService.markCompleted(updatedTask);
+
       // Save the updated task
-      return this.taskRepository.save(updatedTask);
+      return this.taskRepository.save(completedTask);
     } catch (error) {
       console.error(`[ProcessTaskUseCase] Error processing task ${taskId}:`, error);
       
