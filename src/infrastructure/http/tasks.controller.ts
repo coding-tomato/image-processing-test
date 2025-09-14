@@ -3,6 +3,7 @@ import { ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CreateTaskDto } from '../../application/tasks/dto/create-task.dto';
 import { TaskResponseDto } from '../../application/tasks/dto/task-response.dto';
 import { CreateTaskUseCase } from '../../application/tasks/use-cases/create-task.usecase';
+import { ProcessTaskUseCase } from '../../application/tasks/use-cases/process-task.usecase';
 
 /**
  * Tasks Controller
@@ -12,7 +13,10 @@ import { CreateTaskUseCase } from '../../application/tasks/use-cases/create-task
 @ApiTags('tasks')
 @Controller('tasks')
 export class TasksController {
-  constructor(private readonly createTaskUseCase: CreateTaskUseCase) {}
+  constructor(
+    private readonly createTaskUseCase: CreateTaskUseCase,
+    private readonly processTaskUseCase: ProcessTaskUseCase
+  ) {}
 
   /**
    * Create a new image processing task
@@ -27,6 +31,12 @@ export class TasksController {
     type: TaskResponseDto 
   })
   async createTask(@Body() createTaskDto: CreateTaskDto): Promise<TaskResponseDto> {
-    return this.createTaskUseCase.execute(createTaskDto);
+    const taskResponse = await this.createTaskUseCase.execute(createTaskDto);
+    
+    // Start processing the task asynchronously
+    this.processTaskUseCase.execute(taskResponse.taskId)
+      .catch(error => console.error(`Error processing task ${taskResponse.taskId}:`, error));
+    
+    return taskResponse;
   }
 }

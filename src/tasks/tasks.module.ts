@@ -3,8 +3,12 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { TaskSchema } from '../infrastructure/persistence/mongo/schemas/task.schema';
 import { TasksController } from '../infrastructure/http/tasks.controller';
 import { CreateTaskUseCase } from '../application/tasks/use-cases/create-task.usecase';
+import { ProcessTaskUseCase } from '../application/tasks/use-cases/process-task.usecase';
 import { TaskService } from '../domain/tasks/task.service';
 import { TaskRepositoryMongo } from '../infrastructure/persistence/mongo/task.repository.mongo';
+
+// Token for TaskRepository injection
+export const TASK_REPOSITORY = 'TASK_REPOSITORY';
 
 /**
  * Tasks Module
@@ -26,7 +30,7 @@ import { TaskRepositoryMongo } from '../infrastructure/persistence/mongo/task.re
     
     // Infrastructure
     {
-      provide: 'TaskRepository',
+      provide: TASK_REPOSITORY,
       useClass: TaskRepositoryMongo,
     },
     
@@ -36,12 +40,20 @@ import { TaskRepositoryMongo } from '../infrastructure/persistence/mongo/task.re
       useFactory: (taskRepository, taskService) => {
         return new CreateTaskUseCase(taskRepository, taskService);
       },
-      inject: ['TaskRepository', TaskService],
+      inject: [TASK_REPOSITORY, TaskService],
+    },
+    {
+      provide: ProcessTaskUseCase,
+      useFactory: (taskRepository, taskService) => {
+        return new ProcessTaskUseCase(taskRepository, taskService);
+      },
+      inject: [TASK_REPOSITORY, TaskService],
     },
   ],
   exports: [
-    'TaskRepository',
+    TASK_REPOSITORY,
     CreateTaskUseCase,
+    ProcessTaskUseCase,
   ],
 })
 export class TasksModule {}
