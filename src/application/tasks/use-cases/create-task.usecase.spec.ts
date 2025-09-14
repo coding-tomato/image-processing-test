@@ -33,13 +33,10 @@ describe('CreateTaskUseCase', () => {
   });
 
   it('should create a task', async () => {
-    // Arrange
     const imagePath = '/path/to/image.jpg';
     
-    // Act
     const result = await createTaskUseCase.execute({ imagePath });
     
-    // Assert
     expect(result).toBeDefined();
     expect(result.taskId).toBeDefined();
     expect(result.status).toBe('pending');
