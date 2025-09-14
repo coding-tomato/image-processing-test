@@ -6,6 +6,7 @@ import { CreateTaskUseCase } from '../application/tasks/use-cases/create-task.us
 import { ProcessTaskUseCase } from '../application/tasks/use-cases/process-task.usecase';
 import { TaskService } from '../domain/tasks/task.service';
 import { TaskRepositoryMongo } from '../infrastructure/persistence/mongo/task.repository.mongo';
+import { GetTaskUseCase } from 'src/application/tasks/use-cases/get-task.usecase';
 
 // Token for TaskRepository injection
 export const TASK_REPOSITORY = 'TASK_REPOSITORY';
@@ -35,6 +36,13 @@ export const TASK_REPOSITORY = 'TASK_REPOSITORY';
     },
     
     // Use cases
+    {
+      provide: GetTaskUseCase,
+      useFactory: (taskRepository, taskService) => {
+        return new GetTaskUseCase(taskRepository, taskService);
+      },
+      inject: [TASK_REPOSITORY, TaskService],
+    },
     {
       provide: CreateTaskUseCase,
       useFactory: (taskRepository, taskService) => {
