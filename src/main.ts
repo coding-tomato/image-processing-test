@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import * as dotenv from 'dotenv';
-import { setupSwagger } from './config/swagger.config';
+import { setupSwagger } from './tasks/config/swagger.config';
 
 // Load environment variables from .env file
 dotenv.config();

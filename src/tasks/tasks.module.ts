@@ -1,15 +1,15 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { TaskSchema } from '../infrastructure/persistence/mongo/schemas/task.schema';
-import { TasksController } from '../infrastructure/http/tasks.controller';
-import { CreateTaskUseCase } from '../application/tasks/use-cases/create-task.usecase';
-import { ProcessTaskUseCase } from '../application/tasks/use-cases/process-task.usecase';
-import { GetTaskUseCase } from '../application/tasks/use-cases/get-task.usecase';
-import { TaskService } from '../domain/tasks/task.service';
-import { TaskRepositoryMongo } from '../infrastructure/persistence/mongo/task.repository.mongo';
-import { DownloadAdapter } from '../infrastructure/files/download.adapter';
-import { SharpAdapter } from 'src/infrastructure/image-processing/sharp.adapter';
-import { Tokens } from '../common/constants/tokens.constant';
+import { TaskSchema } from './infrastructure/persistence/mongo/schemas/task.schema';
+import { TasksController } from './infrastructure/http/tasks.controller';
+import { CreateTaskUseCase } from './application/tasks/use-cases/create-task.usecase';
+import { ProcessTaskUseCase } from './application/tasks/use-cases/process-task.usecase';
+import { GetTaskUseCase } from './application/tasks/use-cases/get-task.usecase';
+import { TaskService } from './domain/tasks/task.service';
+import { TaskRepositoryMongo } from './infrastructure/persistence/mongo/task.repository.mongo';
+import { DownloadAdapter } from './infrastructure/files/download.adapter';
+import { SharpAdapter } from 'src/tasks/infrastructure/image-processing/sharp.adapter';
+import { Tokens } from './common/constants/tokens.constant';
 
 /**
  * Tasks Module

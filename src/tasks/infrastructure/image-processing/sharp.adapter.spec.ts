@@ -3,6 +3,8 @@ import * as path from 'path';
 import { SharpAdapter } from './sharp.adapter';
 import { RESOLUTIONS } from '../../common/constants/resolutions.constant';
 
+process.env.NODE_ENV = 'test';
+
 describe('SharpAdapter', () => {
   let sharpAdapter: SharpAdapter;
   let originalImagePath: string;

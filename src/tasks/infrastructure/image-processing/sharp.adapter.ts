@@ -62,7 +62,6 @@ export class SharpAdapter {
 
       return variants;
     } catch (error) {
-      console.error('Error generating image variants:', error);
       throw new Error(`Failed to generate image variants: ${error.message}`);
     }
   }
