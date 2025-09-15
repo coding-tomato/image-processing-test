@@ -1,5 +1,4 @@
 import { NotFoundException } from '@nestjs/common';
-import { ImageRepository } from '../../../domain/images/image.repository.port';
 import { Task } from '../../../domain/tasks/task.entity';
 import { TaskRepository } from '../../../domain/tasks/task.repository.port';
 import { TaskService } from '../../../domain/tasks/task.service';
@@ -17,7 +16,6 @@ export class ProcessTaskUseCase {
   constructor(
     private readonly taskRepository: TaskRepository,
     private readonly taskService: TaskService,
-    private readonly imageRepository: ImageRepository,
     private readonly sharpAdapter: SharpAdapter,
   ) {}
 
@@ -41,7 +39,7 @@ export class ProcessTaskUseCase {
       // Image processing logic
       // 1. The image has already been downloaded or resolved by CreateTaskUseCase
       // 2. Process image variants with SharpAdapter
-      // 3. Save results in ImageRepository
+      // 3. Save results
       
       // The originalPath now contains the absolute path processed by DownloadAdapter
       console.log(`[ProcessTaskUseCase] Processing task ${taskId} with image at ${task.originalPath}`);

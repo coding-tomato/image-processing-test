@@ -10,7 +10,7 @@ describe('SharpAdapter', () => {
   beforeAll(() => {
     sharpAdapter = new SharpAdapter();
     // Point to the sample image in the input folder
-    originalImagePath = path.join(process.cwd(), 'input', 'Lionel_Messi_20180626.jpg');
+    originalImagePath = path.join(process.cwd(), 'input', 'test_image.jpeg');
   });
   
   afterAll(async () => {
@@ -19,6 +19,10 @@ describe('SharpAdapter', () => {
       const fileName = path.basename(originalImagePath, path.extname(originalImagePath));
       const outputDir = path.join(process.cwd(), 'output', fileName);
       await fs.rm(outputDir, { recursive: true, force: true });
+      
+      // Also clean up any non-image file directory created for tests
+      const nonImageDir = path.join(process.cwd(), 'output', 'non-image-file');
+      await fs.rm(nonImageDir, { recursive: true, force: true }).catch(() => {});
     } catch (err) {
       console.error('Error cleaning up test output:', err);
     }
@@ -52,8 +56,13 @@ describe('SharpAdapter', () => {
       // Ensure the resolution matches one from our constants
       expect(RESOLUTIONS).toContain(variant.resolution);
       
-      // Ensure the output file exists
-      const fileExists = await fs.access(variant.path)
+      // Ensure the output file exists - convert URL path to filesystem path
+      const fileName = path.basename(originalImagePath, path.extname(originalImagePath));
+      const outputBaseDir = path.join(process.cwd(), 'output', fileName);
+      const outputFileName = path.basename(variant.path);
+      const outputFilePath = path.join(outputBaseDir, outputFileName);
+      
+      const fileExists = await fs.access(outputFilePath)
         .then(() => true)
         .catch(() => false);
       expect(fileExists).toBe(true);
@@ -61,15 +70,15 @@ describe('SharpAdapter', () => {
   });
 
   it('should throw error when processing invalid image', async () => {
+    // Create a directory for our non-image file
+    const nonImageDir = path.join(process.cwd(), 'output', 'non-image-file');
+    await fs.mkdir(nonImageDir, { recursive: true });
+    
     // Create a non-image file for testing error handling
-    const invalidImagePath = path.join(process.cwd(), 'output', 'non-image-file.txt');
+    const invalidImagePath = path.join(nonImageDir, 'not-an-image.txt');
     await fs.writeFile(invalidImagePath, 'This is not an image');
     
-    try {
-      await expect(sharpAdapter.generateVariants(invalidImagePath)).rejects.toThrow();
-    } finally {
-      // Clean up the test file
-      await fs.unlink(invalidImagePath);
-    }
+    // The adapter should throw an error when processing a non-image file
+    await expect(sharpAdapter.generateVariants(invalidImagePath)).rejects.toThrow();
   });
 });

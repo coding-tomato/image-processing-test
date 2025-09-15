@@ -1,6 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { TaskRepository } from '../../../domain/tasks/task.repository.port';
-import { ImageRepository } from '../../../domain/images/image.repository.port';
 import { TaskResponseDto } from '../dto/task-response.dto';
 
 /**
@@ -11,10 +10,7 @@ import { TaskResponseDto } from '../dto/task-response.dto';
  */
 @Injectable()
 export class GetTaskUseCase {
-  constructor(
-    private readonly taskRepository: TaskRepository,
-    private readonly imageRepository: ImageRepository,
-  ) {}
+  constructor(private readonly taskRepository: TaskRepository) {}
 
   /**
    * Execute the use case to get a task by ID
@@ -36,11 +32,7 @@ export class GetTaskUseCase {
     };
 
     if (task.status === 'completed') {
-      const images = await this.imageRepository.findByTaskId(taskId);
-      response.images = images.map(image => ({
-        resolution: image.resolution,
-        path: image.path,
-      }));
+      response.images = task.images;
     }
 
     return response;

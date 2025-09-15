@@ -55,7 +55,7 @@ export class SharpAdapter {
         
         variants.push({
           resolution,
-          path: urlPath,
+          path: urlPath, // URL path for API responses
           md5: md5Hash,
         });
       }
