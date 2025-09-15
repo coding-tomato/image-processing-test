@@ -41,9 +41,11 @@ export class SharpAdapter {
       for (const resolution of RESOLUTIONS) {
         const md5Hash = generateMd5(`${fileName}_${resolution}_${Date.now()}`);
         
-        const outputPath = path.join(outputBaseDir, `${fileName}_${md5Hash}_${resolution}${fileExt}`);
-        const urlPath = `/images/${fileName}_${md5Hash}_${resolution}${fileExt}`;
+        const outputPath = path.join(outputBaseDir, resolution, `${md5Hash}${fileExt}`);
+        const urlPath = `/images/${fileName}/${resolution}/${md5Hash}${fileExt}`;
         
+        await fs.mkdir(path.dirname(outputPath), { recursive: true });
+
         await image
           .clone()
           .resize({
