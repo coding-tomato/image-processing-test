@@ -2,12 +2,16 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import * as dotenv from 'dotenv';
 import { setupSwagger } from './tasks/config/swagger.config';
+import { HttpExceptionFilter } from './infrastructure/http/filters/http-exception.filter';
 
 // Load environment variables from .env file
 dotenv.config();
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  
+  // Apply global HTTP exception filter
+  app.useGlobalFilters(new HttpExceptionFilter());
   
   // Setup Swagger documentation
   setupSwagger(app);
