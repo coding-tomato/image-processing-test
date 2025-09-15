@@ -1,9 +1,9 @@
-import { Task } from '../../../domain/tasks/task.entity';
-import { TaskRepository } from '../../../domain/tasks/task.repository.port';
-import { TaskService } from '../../../domain/tasks/task.service';
-import { DownloadAdapter } from '../../../infrastructure/files/download.adapter';
-import { CreateTaskDto } from '../dto/create-task.dto';
-import { TaskResponseDto } from '../dto/task-response.dto';
+import { Task } from './../../domain/task.entity';
+import { TaskRepository } from './../../domain/task.repository.port';
+import { TaskService } from './../../domain/task.service';
+import { DownloadAdapter } from './../../infrastructure/files/download.adapter';
+import { CreateTaskDto } from './../dto/create-task.dto';
+import { TaskResponseDto } from './../dto/task-response.dto';
 
 /**
  * Create Task Use Case

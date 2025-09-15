@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { TaskRepository } from '../../../domain/tasks/task.repository.port';
-import { TaskResponseDto } from '../dto/task-response.dto';
+import { TaskRepository } from './../../domain/task.repository.port';
+import { TaskResponseDto } from './../dto/task-response.dto';
 
 /**
  * Get Task Use Case

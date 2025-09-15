@@ -1,8 +1,8 @@
 import { NotFoundException } from '@nestjs/common';
-import { Task } from '../../../domain/tasks/task.entity';
-import { TaskRepository } from '../../../domain/tasks/task.repository.port';
-import { TaskService } from '../../../domain/tasks/task.service';
-import { SharpAdapter } from '../../../infrastructure/image-processing/sharp.adapter';
+import { Task } from './../../domain/task.entity';
+import { TaskRepository } from './../../domain/task.repository.port';
+import { TaskService } from './../../domain/task.service';
+import { SharpAdapter } from './../../infrastructure/image-processing/sharp.adapter';
 
 /**
  * Process Task Use Case

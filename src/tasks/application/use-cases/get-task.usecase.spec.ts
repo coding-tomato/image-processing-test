@@ -2,8 +2,8 @@ import { MongoMemoryServer } from 'mongodb-memory-server';
 import * as mongoose from 'mongoose';
 import { NotFoundException } from '@nestjs/common';
 import { GetTaskUseCase } from './get-task.usecase';
-import { TaskSchema } from '../../../infrastructure/persistence/mongo/schemas/task.schema';
-import { TaskRepositoryMongo } from '../../../infrastructure/persistence/mongo/task.repository.mongo';
+import { TaskSchema } from './../../infrastructure/persistence/mongo/schemas/task.schema';
+import { TaskRepositoryMongo } from './../../infrastructure/persistence/mongo/task.repository.mongo';
 import { Model } from 'mongoose';
 
 describe('GetTaskUseCase', () => {

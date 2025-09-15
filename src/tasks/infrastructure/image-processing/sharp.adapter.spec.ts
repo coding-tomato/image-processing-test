@@ -1,7 +1,7 @@
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import { SharpAdapter } from './sharp.adapter';
-import { RESOLUTIONS } from '../../common/constants/resolutions.constant';
+import { RESOLUTIONS } from '../../../shared/common/constants/resolutions.constant';
 
 process.env.NODE_ENV = 'test';
 
@@ -61,8 +61,10 @@ describe('SharpAdapter', () => {
       // Ensure the output file exists - convert URL path to filesystem path
       const fileName = path.basename(originalImagePath, path.extname(originalImagePath));
       const outputBaseDir = path.join(process.cwd(), 'output', fileName);
-      const outputFileName = path.basename(variant.path);
-      const outputFilePath = path.join(outputBaseDir, outputFileName);
+      const pathParts = variant.path.split('/');
+      const resolution = pathParts[pathParts.length - 2];
+      const outputFileName = pathParts[pathParts.length - 1];
+      const outputFilePath = path.join(outputBaseDir, resolution, outputFileName);
       
       const fileExists = await fs.access(outputFilePath)
         .then(() => true)

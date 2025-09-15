@@ -1,8 +1,8 @@
 import * as sharp from 'sharp';
 import * as path from 'path';
 import * as fs from 'fs/promises';
-import { generateMd5 } from '../../common/utils/md5.util';
-import { RESOLUTIONS } from '../../common/constants/resolutions.constant';
+import { generateMd5 } from '../../../shared/utils/md5.util';
+import { RESOLUTIONS } from '../../../shared/common/constants/resolutions.constant';
 
 /**
  * Image variant information returned after processing

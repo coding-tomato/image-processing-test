@@ -2,14 +2,30 @@ import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { TaskSchema } from './infrastructure/persistence/mongo/schemas/task.schema';
 import { TasksController } from './infrastructure/http/tasks.controller';
-import { CreateTaskUseCase } from './application/tasks/use-cases/create-task.usecase';
-import { ProcessTaskUseCase } from './application/tasks/use-cases/process-task.usecase';
-import { GetTaskUseCase } from './application/tasks/use-cases/get-task.usecase';
-import { TaskService } from './domain/tasks/task.service';
+import { CreateTaskUseCase } from './application/use-cases/create-task.usecase';
+import { ProcessTaskUseCase } from './application/use-cases/process-task.usecase';
+import { GetTaskUseCase } from './application/use-cases/get-task.usecase';
+import { TaskService } from './domain/task.service';
 import { TaskRepositoryMongo } from './infrastructure/persistence/mongo/task.repository.mongo';
 import { DownloadAdapter } from './infrastructure/files/download.adapter';
 import { SharpAdapter } from 'src/tasks/infrastructure/image-processing/sharp.adapter';
-import { Tokens } from './common/constants/tokens.constant';
+
+/**
+ * Application dependency injection tokens
+ * 
+ * Organized by type and domain to provide better structure and readability
+ */
+export const Tokens = {
+  Repository: {
+    Tasks: 'TASK_REPOSITORY',
+    Images: 'IMAGE_REPOSITORY',
+  },
+  Adapter: {
+    Sharp: 'SHARP_ADAPTER',
+    Download: 'DOWNLOAD_ADAPTER',
+  },
+};
+
 
 /**
  * Tasks Module

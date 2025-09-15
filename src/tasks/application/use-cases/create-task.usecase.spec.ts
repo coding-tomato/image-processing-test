@@ -1,11 +1,11 @@
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import * as mongoose from 'mongoose';
-import { TaskService } from '../../../domain/tasks/task.service';
+import { TaskService } from './../../domain/task.service';
 import { CreateTaskUseCase } from './create-task.usecase';
-import { TaskSchema } from '../../../infrastructure/persistence/mongo/schemas/task.schema';
-import { TaskRepositoryMongo } from '../../../infrastructure/persistence/mongo/task.repository.mongo';
+import { TaskSchema } from './../../infrastructure/persistence/mongo/schemas/task.schema';
+import { TaskRepositoryMongo } from './../../infrastructure/persistence/mongo/task.repository.mongo';
 import { Model } from 'mongoose';
-import { DownloadAdapter } from '../../../infrastructure/files/download.adapter';
+import { DownloadAdapter } from './../../infrastructure/files/download.adapter';
 
 describe('CreateTaskUseCase', () => {
   let mongoServer: MongoMemoryServer;

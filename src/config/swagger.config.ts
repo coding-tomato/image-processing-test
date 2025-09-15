@@ -1,6 +1,6 @@
 import { INestApplication } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { Task } from '../domain/tasks/task.entity';
+import { Task } from '../tasks/domain/task.entity';
 
 /**
  * Sets up Swagger documentation for the application

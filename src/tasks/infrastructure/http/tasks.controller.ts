@@ -1,10 +1,10 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { ApiCreatedResponse, ApiOkResponse, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
-import { CreateTaskDto } from '../../application/tasks/dto/create-task.dto';
-import { TaskResponseDto } from '../../application/tasks/dto/task-response.dto';
-import { CreateTaskUseCase } from '../../application/tasks/use-cases/create-task.usecase';
-import { GetTaskUseCase } from '../../application/tasks/use-cases/get-task.usecase';
-import { ProcessTaskUseCase } from '../../application/tasks/use-cases/process-task.usecase';
+import { CreateTaskDto } from '../../application/dto/create-task.dto';
+import { TaskResponseDto } from '../../application/dto/task-response.dto';
+import { CreateTaskUseCase } from '../../application/use-cases/create-task.usecase';
+import { GetTaskUseCase } from '../../application/use-cases/get-task.usecase';
+import { ProcessTaskUseCase } from '../../application/use-cases/process-task.usecase';
 
 /**
  * Tasks Controller

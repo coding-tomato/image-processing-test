@@ -2,12 +2,12 @@ import { MongoMemoryServer } from 'mongodb-memory-server';
 import * as mongoose from 'mongoose';
 import { NotFoundException } from '@nestjs/common';
 import { ProcessTaskUseCase } from './process-task.usecase';
-import { TaskSchema } from '../../../infrastructure/persistence/mongo/schemas/task.schema';
-import { TaskRepositoryMongo } from '../../../infrastructure/persistence/mongo/task.repository.mongo';
-import { TaskService } from '../../../domain/tasks/task.service';
-import { Task } from '../../../domain/tasks/task.entity';
+import { TaskSchema } from './../../infrastructure/persistence/mongo/schemas/task.schema';
+import { TaskRepositoryMongo } from './../../infrastructure/persistence/mongo/task.repository.mongo';
+import { TaskService } from './../../domain/task.service';
+import { Task } from './../../domain/task.entity';
 import { Model } from 'mongoose';
-import { SharpAdapter } from '../../../infrastructure/image-processing/sharp.adapter';
+import { SharpAdapter } from './../../infrastructure/image-processing/sharp.adapter';
 
 describe('ProcessTaskUseCase', () => {
   let mongoServer: MongoMemoryServer;

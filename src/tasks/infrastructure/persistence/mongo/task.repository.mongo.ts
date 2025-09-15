@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Task } from '../../../domain/tasks/task.entity';
-import { TaskRepository } from '../../../domain/tasks/task.repository.port';
+import { Task } from '../../../domain/task.entity';
+import { TaskRepository } from '../../../domain/task.repository.port';
 import { TaskDocument } from './schemas/task.schema';
 
 /**
