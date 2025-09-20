@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { TaskRepository } from './../../domain/task.repository.port';
+import { TaskRepository } from '../../domain/task.repository';
 import { TaskResponseDto } from './../dto/task-response.dto';
 
 /**

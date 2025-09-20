@@ -4,9 +4,10 @@ import { join, basename } from 'path';
 import * as https from 'https';
 import * as http from 'http';
 import { URL } from 'url';
+import { ImageRepository } from 'src/tasks/domain/image.repository';
 
 @Injectable()
-export class DownloadAdapter {
+export class DownloadAdapter implements ImageRepository {
   private readonly inputDir = join(process.cwd(), 'input');
   private readonly outputDir = join(process.cwd(), 'output');
 
@@ -27,7 +28,7 @@ export class DownloadAdapter {
    * @param path URL or local file path
    * @returns Promise with the absolute path to the file
    */
-  async getFilePath(path: string): Promise<string> {
+  async getLocalFilePath(path: string): Promise<string> {
     try {
       const url = new URL(path);
       

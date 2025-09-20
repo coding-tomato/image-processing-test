@@ -1,10 +1,4 @@
-/**
- * Interface for image information in a task
- */
-export interface TaskImage {
-  resolution: string;
-  path: string;
-}
+import { Image } from "./image.entity";
 
 /**
  * Task Entity
@@ -14,7 +8,7 @@ export class Task {
   status: 'pending' | 'completed' | 'failed';
   price: number;
   originalPath: string;
-  images: TaskImage[];
+  images: Image[];
   createdAt: Date;
   updatedAt: Date;
 

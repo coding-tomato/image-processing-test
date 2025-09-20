@@ -2,12 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Task } from '../../../domain/task.entity';
-import { TaskRepository } from '../../../domain/task.repository.port';
+import { TaskRepository } from '../../../domain/task.repository';
 import { TaskDocument } from './schemas/task.schema';
 
 /**
  * MongoDB implementation of the TaskRepository port
- * 
+ *
  * This class adapts the TaskRepository port to MongoDB using Mongoose.
  * It fulfills the contract defined by the TaskRepository interface.
  */
@@ -22,13 +22,13 @@ export class TaskRepositoryMongo implements TaskRepository {
    */
   private toEntity(document: TaskDocument): Task {
     if (!document) return null;
-    
+
     return new Task({
       id: document.id,
       status: document.status,
       price: document.price,
       originalPath: document.originalPath,
-      images: document.images || [],
+      images: document.images,
       createdAt: document.createdAt,
       updatedAt: document.updatedAt,
     });
@@ -43,12 +43,12 @@ export class TaskRepositoryMongo implements TaskRepository {
       status: task.status,
       price: task.price,
       originalPath: task.originalPath,
-      images: task.images || [],
+      images: task.images,
       createdAt: task.createdAt,
       updatedAt: new Date(),
     };
   }
-  
+
   /**
    * Generates a string ID using MongoDB's ObjectId
    */
@@ -62,16 +62,13 @@ export class TaskRepositoryMongo implements TaskRepository {
    * @returns Promise resolving to the saved task entity
    */
   async save(task: Task): Promise<Task> {
-    const exists = task.id && await this.taskModel.findOne({ id: task.id }).exec();
-    
+    const exists =
+      task.id && (await this.taskModel.findOne({ id: task.id }).exec());
+
     if (exists) {
       // Update existing task
       const updated = await this.taskModel
-        .findOneAndUpdate(
-          { id: task.id },
-          this.toDocument(task),
-          { new: true }
-        )
+        .findOneAndUpdate({ id: task.id }, this.toDocument(task), { new: true })
         .exec();
       return this.toEntity(updated);
     } else {

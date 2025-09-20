@@ -6,13 +6,14 @@ import { TaskSchema } from './../../infrastructure/persistence/mongo/schemas/tas
 import { TaskRepositoryMongo } from './../../infrastructure/persistence/mongo/task.repository.mongo';
 import { Model } from 'mongoose';
 import { DownloadAdapter } from './../../infrastructure/files/download.adapter';
+import { ImageRepository } from 'src/tasks/domain/image.repository';
 
 describe('CreateTaskUseCase', () => {
   let mongoServer: MongoMemoryServer;
   let taskModel: Model<any>;
   let taskRepository: TaskRepositoryMongo;
   let taskService: TaskService;
-  let downloadAdapter: DownloadAdapter;
+  let downloadAdapter: ImageRepository;
   let createTaskUseCase: CreateTaskUseCase;
 
   beforeAll(async () => {
@@ -37,7 +38,7 @@ describe('CreateTaskUseCase', () => {
 
   it('should create a task with a local file path', async () => {
     // Mock the getFilePath method to return a fixed path
-    jest.spyOn(downloadAdapter, 'getFilePath').mockResolvedValueOnce('/processed/path/image.jpg');
+    jest.spyOn(downloadAdapter, 'getLocalFilePath').mockResolvedValueOnce('/processed/path/image.jpg');
     
     const imagePath = '/path/to/image.jpg';
     
@@ -50,12 +51,12 @@ describe('CreateTaskUseCase', () => {
     expect(result.price).toBeLessThanOrEqual(50);
     
     // Verify the download adapter was called with the correct path
-    expect(downloadAdapter.getFilePath).toHaveBeenCalledWith(imagePath);
+    expect(downloadAdapter.getLocalFilePath).toHaveBeenCalledWith(imagePath);
   });
   
   it('should create a task with a URL', async () => {
-    // Mock the getFilePath method to return a fixed path
-    jest.spyOn(downloadAdapter, 'getFilePath').mockResolvedValueOnce('/downloaded/path/image.jpg');
+    // Mock the getLocalFilePath method to return a fixed path
+    jest.spyOn(downloadAdapter, 'getLocalFilePath').mockResolvedValueOnce('/downloaded/path/image.jpg');
     
     const imageUrl = 'https://example.com/image.jpg';
     
@@ -68,6 +69,6 @@ describe('CreateTaskUseCase', () => {
     expect(result.price).toBeLessThanOrEqual(50);
     
     // Verify the download adapter was called with the correct URL
-    expect(downloadAdapter.getFilePath).toHaveBeenCalledWith(imageUrl);
+    expect(downloadAdapter.getLocalFilePath).toHaveBeenCalledWith(imageUrl);
   });
 });

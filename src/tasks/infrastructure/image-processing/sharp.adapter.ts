@@ -1,24 +1,20 @@
 import * as sharp from 'sharp';
 import * as path from 'path';
 import * as fs from 'fs/promises';
-import { generateMd5 } from '../../../shared/utils/md5.util';
-import { RESOLUTIONS } from '../../../shared/common/constants/resolutions.constant';
+import { createHash } from 'crypto';
+import { RESOLUTIONS } from 'src/tasks/domain/image.entity';
+import { ImageVariant, ImageProcessingRepository } from 'src/tasks/domain/image-processing.repository';
 
-/**
- * Image variant information returned after processing
- */
-export interface ImageVariant {
-  resolution: string;
-  path: string;
-  md5: string;
-}
+export const generateMd5 = (data: string): string => {
+  return createHash('md5').update(data).digest('hex');
+};
 
 /**
  * Sharp adapter for image processing
  * 
  * This class uses the Sharp library to process images and generate different variants.
  */
-export class SharpAdapter {
+export class SharpAdapter implements ImageProcessingRepository {
   /**
    * Generate image variants with different resolutions
    * @param originalPath Path to the original image

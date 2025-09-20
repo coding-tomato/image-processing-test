@@ -1,12 +1,13 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
+import { SupportedResolutions } from 'src/tasks/domain/image.entity';
 
 /**
  * Image information schema
  */
 class TaskImage {
   @Prop({ required: true })
-  resolution: string;
+  resolution: SupportedResolutions;
 
   @Prop({ required: true })
   path: string;

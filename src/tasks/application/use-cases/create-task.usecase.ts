@@ -1,9 +1,9 @@
 import { Task } from './../../domain/task.entity';
-import { TaskRepository } from './../../domain/task.repository.port';
+import { TaskRepository } from '../../domain/task.repository';
 import { TaskService } from './../../domain/task.service';
-import { DownloadAdapter } from './../../infrastructure/files/download.adapter';
 import { CreateTaskDto } from './../dto/create-task.dto';
 import { TaskResponseDto } from './../dto/task-response.dto';
+import { ImageRepository } from 'src/tasks/domain/image.repository';
 
 /**
  * Create Task Use Case
@@ -16,7 +16,7 @@ export class CreateTaskUseCase {
   constructor(
     private readonly taskRepository: TaskRepository,
     private readonly taskService: TaskService,
-    private readonly downloadAdapter: DownloadAdapter,
+    private readonly downloadAdapter: ImageRepository,
   ) {}
 
   /**
@@ -26,7 +26,7 @@ export class CreateTaskUseCase {
    */
   async execute(input: CreateTaskDto): Promise<TaskResponseDto> {
     // Process the image path (download if URL, resolve if local)
-    const processedPath = await this.downloadAdapter.getFilePath(input.imagePath);
+    const processedPath = await this.downloadAdapter.getLocalFilePath(input.imagePath);
     
     // Generate a random price using domain service
     const price = this.taskService.assignPrice();

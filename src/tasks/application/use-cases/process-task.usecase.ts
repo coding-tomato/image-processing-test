@@ -1,8 +1,9 @@
 import { NotFoundException } from '@nestjs/common';
 import { Task } from './../../domain/task.entity';
-import { TaskRepository } from './../../domain/task.repository.port';
+import { TaskRepository } from '../../domain/task.repository';
 import { TaskService } from './../../domain/task.service';
 import { SharpAdapter } from './../../infrastructure/image-processing/sharp.adapter';
+import { SupportedResolutions } from 'src/tasks/domain/image.entity';
 
 /**
  * Process Task Use Case
@@ -53,7 +54,7 @@ export class ProcessTaskUseCase {
       const updatedTask = new Task({
         ...task,
         images: imageVariants.map((variant) => ({
-          resolution: variant.resolution,
+          resolution: variant.resolution as SupportedResolutions,
           path: variant.path,
         })),
       });
